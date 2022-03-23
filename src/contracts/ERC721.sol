@@ -21,12 +21,24 @@ contract ERC721 {
     // mapping number of tokens held by address
     mapping(address => uint256) private _OwnedTokensCount;
 
+    function balanceOf(address _owner) public view returns (uint256) {
+        require(_owner != address(0), "Wrong address");
+
+        return _OwnedTokensCount[_owner];
+    }
+
+    function ownerOf(uint256 _tokenId) public view returns (address) {
+        address owner = _tokenOwner[_tokenId];
+        require(owner != address(0), "no owner");
+        return owner;
+    }
+
     function _exists(uint256 tokenId) internal view returns (bool) {
         address owner = _tokenOwner[tokenId];
         return owner != address(0);
     }
 
-    function _mint(address to, uint256 tokenId) internal {
+    function _mint(address to, uint256 tokenId) internal virtual {
         // make sure its a valid address
         require(to != address(0), "ERC721 minting to 0 address");
 
