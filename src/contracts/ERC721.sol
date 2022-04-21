@@ -1,6 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
+import "./ERC165.sol";
+import "./interfaces/IERC721.sol";
+
 /*
     1. Keep track of the address who mints the NFT 
     2. Keep track of Token id 
@@ -8,18 +11,16 @@ pragma solidity ^0.8.0;
     4. keep track of how many tokens owner has 
     5. emit trnasfer logs 
 */
-contract ERC721 {
-    event Transfer(
-        address indexed from,
-        address indexed to,
-        uint256 indexed tokenId
-    );
-
-    event Approval(
-        address indexed owner,
-        address indexed approved,
-        uint256 indexed tokenId
-    );
+contract ERC721 is ERC165, IERC721 {
+    constructor() {
+        _registerInterface(
+            bytes4(
+                keccak256(("balanceOf(bytes4)")) ^
+                    keccak256(("ownerOf(bytes4)")) ^
+                    keccak256(("transferFrom(bytes4)"))
+            )
+        );
+    }
 
     // mapping owner to token ids
     mapping(uint256 => address) private _tokenOwner;
@@ -30,13 +31,13 @@ contract ERC721 {
     // mapping from token id to approved addresses
     mapping(uint256 => address) private _tokenApprovals;
 
-    function balanceOf(address _owner) public view returns (uint256) {
+    function balanceOf(address _owner) public view override returns (uint256) {
         require(_owner != address(0), "Wrong address");
 
         return _OwnedTokensCount[_owner];
     }
 
-    function ownerOf(uint256 _tokenId) public view returns (address) {
+    function ownerOf(uint256 _tokenId) public view override returns (address) {
         address owner = _tokenOwner[_tokenId];
         require(owner != address(0), "no owner");
         return owner;
@@ -103,7 +104,7 @@ contract ERC721 {
         address _from,
         address _to,
         uint256 _tokenId
-    ) public payable {
+    ) public payable override {
         require(isApprovedOrOwner(msg.sender, _tokenId), "Error");
         _transferFrom(_from, _to, _tokenId);
     }

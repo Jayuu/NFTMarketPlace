@@ -2,12 +2,23 @@
 pragma solidity ^0.8.0;
 
 import "./ERC721.sol";
+import "./interfaces/IERC721Enumerable.sol";
 
 /// @title ERC-721 Non-Fungible Token Standard, optional enumeration extension
 /// @dev See https://eips.ethereum.org/EIPS/eip-721
 ///  Note: the ERC-165 identifier for this interface is 0x780e9d63.
 /* is ERC721 */
-contract ERC721Enumerable is ERC721 {
+contract ERC721Enumerable is ERC721, IERC721Enumerable {
+    constructor() {
+        _registerInterface(
+            bytes4(
+                keccak256(("totalSupply(bytes4)")) ^
+                    keccak256(("tokenByIndex(bytes4)")) ^
+                    keccak256(("tokenOfOwnerByIndex(bytes4)"))
+            )
+        );
+    }
+
     uint256[] private _allTokens;
 
     // mapping from tokenId to all token position
@@ -44,7 +55,12 @@ contract ERC721Enumerable is ERC721 {
     }
 
     // returns token by index
-    function tokenByIndex(uint256 index) public view returns (uint256) {
+    function tokenByIndex(uint256 index)
+        public
+        view
+        override
+        returns (uint256)
+    {
         // make sure index is within in the range of existance
         require(index < totalSupply(), "Global index is out of bounds");
 
@@ -55,6 +71,7 @@ contract ERC721Enumerable is ERC721 {
     function tokenOfOwnerByIndex(address owner, uint256 index)
         public
         view
+        override
         returns (uint256)
     {
         require(index < balanceOf(owner), "Owner index is out of bounds");
@@ -65,7 +82,7 @@ contract ERC721Enumerable is ERC721 {
     /// @notice Count NFTs tracked by this contract
     /// @return A count of valid NFTs tracked by this contract, where each one of
     ///  them has an assigned and queryable owner not equal to the zero address
-    function totalSupply() public view returns (uint256) {
+    function totalSupply() public view override returns (uint256) {
         return _allTokens.length;
     }
 }
