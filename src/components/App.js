@@ -5,6 +5,17 @@ import detectEthereumProvider from "@metamask/detect-provider";
 
 import Stamps from "../abi/RareStampz.json";
 
+import "./App.css";
+
+import {
+  MDBCard,
+  MDBCardBody,
+  MDBCardTitle,
+  MDBCardText,
+  MDBCardImage,
+  MDBBtn,
+} from "mdb-react-ui-kit";
+
 class App extends Component {
   async componentDidMount() {
     await this.loadWeb3();
@@ -96,7 +107,7 @@ class App extends Component {
   // render UI on React
   render() {
     return (
-      <div>
+      <div className="containerFilled">
         {console.log(this.state.stamps)}
         <nav className="navbar navbar-dark fixed-top bg-dark flex-md-nowrap p-0 shadow ">
           <div
@@ -113,10 +124,10 @@ class App extends Component {
         </nav>
 
         <div className="container-fluid mt-1">
-          <div className="row ">
+          <div className="row center-row">
             <main role="main" className="col=lg-12 d-flex text-center">
               <div className="content  mr-auto ml-auto">
-                <h1>RareStamps NFT Marketplace</h1>
+                <h1 style={{ color: "black" }}>RareStamps NFT Marketplace</h1>
                 <form
                   onSubmit={(event) => {
                     event.preventDefault();
@@ -138,6 +149,36 @@ class App extends Component {
                 </form>
               </div>
             </main>
+          </div>
+
+          <hr></hr>
+          <div className="row textCenter">
+            {this.state.stamps.map((stamp, key) => {
+              console.log(stamp);
+              return (
+                <div>
+                  <div>
+                    <MDBCard
+                      className="token img"
+                      style={{ maxWidth: "22rem" }}
+                    >
+                      <MDBCardImage
+                        src={stamp}
+                        position="top"
+                        style={{ marginRight: "4px" }}
+                      />
+                      <MDBCardBody>
+                        <MDBCardTitle>Stamps</MDBCardTitle>
+                        <MDBCardText>
+                          20 Unique stamps there is only one of each stamps
+                        </MDBCardText>
+                        <MDBBtn href={stamp}>Download</MDBBtn>
+                      </MDBCardBody>
+                    </MDBCard>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
       </div>
